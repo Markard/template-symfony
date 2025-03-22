@@ -33,6 +33,7 @@ services:
     volumes:
       - ./project:/var/www/project:cached
       - composer-data:/home/www-data/.composer/
+      - ./docker/php-fpm/php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
       - type: bind
         source: ./docker/var/php-config/xdebug.ini
         target: /usr/local/etc/php/conf.d/xdebug.ini

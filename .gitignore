@@ -3,6 +3,7 @@
 
 # Config files
 docker/php-fpm/xdebug/xdebug.ini
+docker/php-fpm/php-fpm/www.conf
 
 # JetBrains template
 .idea/

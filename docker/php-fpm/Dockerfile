@@ -38,15 +38,6 @@ RUN set -xe \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/lib \
     && docker-php-ext-install pdo_pgsql pgsql \
     \
-    # installing composer
-    # 1. download it
-    && apk add --no-cache --virtual $BUILD_DEPS_PACKAGE openssl \
-    && wget https://getcomposer.org/download/$COMPOSER_VERSION/composer.phar \
-    # 2. install it and its dependencies
-    && mv composer.phar /usr/local/bin/composer \
-    && chmod +x /usr/local/bin/composer \
-    && apk add --no-cache git \
-    \
     # installing xdebug
     && apk add --update linux-headers \
     && apk --no-cache add pcre-dev ${PHPIZE_DEPS} \ 
@@ -58,9 +49,6 @@ RUN set -xe \
     && echo http://mirror.yandex.ru/mirrors/alpine/edge/community/ >> /etc/apk/repositories \
     && apk add --no-cache --virtual $BUILD_DEPS_PACKAGE shadow \
     && usermod -u $DOCKER_HOST_UID www-data \
-    # prepare shared folder for composer
-    && mkdir /home/www-data/.composer \
-    && chown -R www-data:www-data /home/www-data/.composer \
     \
     # some dependencies of codeception require zip extension to be installed
     && apk add --no-cache --virtual $BUILD_DEPS_PACKAGE libzip-dev zip \
@@ -71,6 +59,24 @@ RUN set -xe \
     # && pecl clear-cache \
     && apk del $BUILD_DEPS_PACKAGE \
     && docker-php-source delete
+
+# Init logs
+RUN mkdir /usr/local/log \
+&& chown -R www-data:www-data /usr/local/log \
+&& touch /usr/local/log/www.log.slow \
+&& chown www-data:www-data /usr/local/log/www.log.slow \
+&& touch /usr/local/log/www.access.log \
+&& chown www-data:www-data /usr/local/log/www.access.log
+
+# Устанавливаем Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# prepare shared folder for composer
+RUN mkdir /home/www-data/.composer \
+&& chown -R www-data:www-data /home/www-data/.composer
+
+# Устанавливаем консольную команду Symfony
+RUN curl -sS https://get.symfony.com/cli/installer | php -- --install-dir=/usr/local/bin \
+    && ln -s /usr/local/bin/symfony /usr/bin/symfony
 
 COPY php.ini /usr/local/etc/php/php.ini
 COPY fpm-increase-timeout-for-debugging.conf /usr/local/etc/php-fpm.d/increase-timeout-for-debugging.conf
