@@ -2,7 +2,7 @@ This package provides a docker PHP Skeleton setup to start building your next id
 
 ## Getting Started
 1. Setup `.env` from `.env.example` file.
-2. Setup `docker/var/php-config/xdebug.ini` from `docker/var/php-config/xdebug.ini.example` file.
+2. Setup `docker/php-fpm/xdebug/xdebug.ini` from `docker/php-fpm/xdebug/xdebug.ini.example` file.
 3. Build containers with `docker-compose build` command.
 4. Start containers with `docker-compose up -d` command.
 5. Setup `hosts` file with `127.0.0.1       localhost project.local www.project.local` domains.
