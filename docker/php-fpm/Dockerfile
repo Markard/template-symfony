@@ -6,9 +6,6 @@ RUN set -xe && if [ -z $DOCKER_HOST_UID ]; then echo 'DOCKER_HOST_UID is not spe
 ARG MEMCACHED_VERSION
 RUN set -xe && if [ -z $MEMCACHED_VERSION ]; then echo 'MEMCACHED_VERSION is not specified.'; exit 1; fi
 
-ARG COMPOSER_VERSION
-RUN set -xe && if [ -z $COMPOSER_VERSION ]; then echo 'COMPOSER_VERSION is not specified.'; exit 1; fi
-
 ENV BUILD_DEPS_PACKAGE .build-deps
 
 RUN set -xe \
