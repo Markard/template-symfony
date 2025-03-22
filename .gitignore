@@ -1,11 +1,8 @@
 # Environment configuration
 .env
 
-# Var files
-docker/var/php-config/xdebug.ini
-!docker/var/db-dumps
-docker/var/db-dumps/*
-
+# Config files
+docker/php-fpm/xdebug/xdebug.ini
 
 # JetBrains template
 .idea/
