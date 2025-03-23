@@ -1,4 +1,4 @@
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 ARG DOCKER_HOST_UID
 RUN set -xe && if [ -z $DOCKER_HOST_UID ]; then echo 'DOCKER_HOST_UID is not specified.'; exit 1; fi
