@@ -35,6 +35,9 @@ RUN set -xe \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/lib \
     && docker-php-ext-install pdo_pgsql pgsql \
     \
+    # installing mysql extensions
+    && docker-php-ext-install mysqli pdo_mysql \
+    \
     # installing xdebug
     && apk add --update linux-headers \
     && apk --no-cache add pcre-dev ${PHPIZE_DEPS} \ 

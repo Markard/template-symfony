@@ -1,4 +1,4 @@
-This package provides a docker PHP Skeleton setup to start building your next idea. It provides
+This package provides a docker PHP Skeleton setup to start building your next idea.
 
 ## Getting Started
 1. Setup `.env` from `.env.example` file.

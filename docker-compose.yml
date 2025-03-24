@@ -2,6 +2,18 @@ volumes:
   postgres-data:
 
 services:
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+      MYSQL_DATABASE: db_name
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+    volumes:
+      - ./docker/mysql:/etc/mysql/conf.d
+    ports:
+      - 3306:3306
+
   memcached:
     image: memcached:1.6.33-alpine
     expose:
@@ -22,18 +34,6 @@ services:
     ports:
       - 5432:5432
 
-  mysql:
-    image: mysql:latest
-    environment:
-      MYSQL_DATABASE: project
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: apppass
-    volumes:
-      - ./docker/mysql:/etc/mysql/conf.d
-    ports:
-      - 3306:3306
-
   php-fpm:
     build:
       context: docker/php-fpm
@@ -49,6 +49,7 @@ services:
     links:
       - memcached
       - postgres
+      - mysql
 
   nginx:
     image: nginx:1.27.3-alpine
