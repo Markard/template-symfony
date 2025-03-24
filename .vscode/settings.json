@@ -1,0 +1,18 @@
+{
+    "sqltools.connections": [
+        {
+            "pgOptions": {
+                "statement_timeout": 10000,
+                "query_timeout": 10000
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "PgSQL",
+            "group": "Local",
+            "database": "db_name",
+            "username": "user"
+        }
+    ]
+}

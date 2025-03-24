@@ -1,6 +1,3 @@
-volumes:
-  postgres-data:
-
 services:
   mysql:
     image: mysql:${MYSQL_VERSION}
@@ -14,25 +11,19 @@ services:
     ports:
       - 3306:3306
 
+  postgres:
+    image: postgres:${POSTGRESQL_VERSION}
+    environment:
+      POSTGRES_DB: db_name
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - 5432:5432
+
   memcached:
     image: memcached:1.6.33-alpine
     expose:
       - 11211
-
-  postgres:
-    image: postgres:17.2-alpine
-    environment:
-      POSTGRES_DB: project
-      POSTGRES_USER: project
-      POSTGRES_PASSWORD: project
-      PGDATA: /var/lib/postgresql/data/pgdata
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./docker/var/db-dumps/:/docker-entrypoint-initdb.d/
-    expose:
-      - 5432
-    ports:
-      - 5432:5432
 
   php-fpm:
     build:
