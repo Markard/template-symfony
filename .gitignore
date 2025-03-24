@@ -7,3 +7,6 @@ docker/php-fpm/php-fpm/www.conf
 
 # JetBrains template
 .idea/
+
+# VsCode template
+.vscode/
