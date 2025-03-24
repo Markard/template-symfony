@@ -12,10 +12,10 @@ services:
     expose:
       - 9000
     links:
-      - memcached
       - postgres
       - mysql
       - clickhouse
+      - redis
 
   nginx:
     image: nginx:$NGINX_VERSION
@@ -27,7 +27,7 @@ services:
       - 443:443
     links:
       - php-fpm
-      
+
   mysql:
     image: mysql:${MYSQL_VERSION}
     environment:
@@ -59,7 +59,7 @@ services:
     ports:
       - 8123:8123
 
-  memcached:
-    image: memcached:1.6.33-alpine
-    expose:
-      - 11211
+  redis:
+    image: redis:${REDIS_VERSION}
+    ports:
+      - 6379:6379

@@ -38,11 +38,13 @@ RUN set -xe \
     # installing mysql extensions
     && docker-php-ext-install mysqli pdo_mysql \
     \
-    # installing xdebug
+    # installing pecl xdebug redis
     && apk add --update linux-headers \
     && apk --no-cache add pcre-dev ${PHPIZE_DEPS} \ 
     && pecl install xdebug \
     && docker-php-ext-enable xdebug \
+    && pecl install redis \
+    && docker-php-ext-enable redis.so \
     && apk del pcre-dev ${PHPIZE_DEPS} \
     # the extension itself is turned on by custom ini file (see xdebug.ini)
     # mapping www-data uid to the host uid
