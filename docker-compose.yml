@@ -1,4 +1,33 @@
 services:
+  php-fpm:
+    build:      
+      context: docker/php-fpm
+      args:
+        DOCKER_HOST_UID: $DOCKER_HOST_UID
+        MEMCACHED_VERSION: $MEMCACHED_VERSION
+    volumes:
+      - ./project:/var/www/project
+      - ./docker/php-fpm/php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+      - ./docker/php-fpm/xdebug/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:ro
+    expose:
+      - 9000
+    links:
+      - memcached
+      - postgres
+      - mysql
+      - clickhouse
+
+  nginx:
+    image: nginx:$NGINX_VERSION
+    volumes:
+      - ./project:/var/www/project:cached
+      - ./docker/nginx/site.conf:/etc/nginx/conf.d/site.conf
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - php-fpm
+      
   mysql:
     image: mysql:${MYSQL_VERSION}
     environment:
@@ -34,32 +63,3 @@ services:
     image: memcached:1.6.33-alpine
     expose:
       - 11211
-
-  php-fpm:
-    build:
-      context: docker/php-fpm
-      args:
-        DOCKER_HOST_UID: $DOCKER_HOST_UID
-        MEMCACHED_VERSION: $MEMCACHED_VERSION
-    volumes:
-      - ./project:/var/www/project
-      - ./docker/php-fpm/php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
-      - ./docker/php-fpm/xdebug/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:ro
-    expose:
-      - 9000
-    links:
-      - memcached
-      - postgres
-      - mysql
-      - clickhouse
-
-  nginx:
-    image: nginx:1.27.3-alpine
-    volumes:
-      - ./project:/var/www/project:cached
-      - ./docker/nginx/site.conf:/etc/nginx/conf.d/site.conf
-    ports:
-      - 80:80
-      - 443:443
-    links:
-      - php-fpm
