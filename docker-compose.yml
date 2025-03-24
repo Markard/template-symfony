@@ -20,6 +20,16 @@ services:
     ports:
       - 5432:5432
 
+  clickhouse:
+    image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION}
+    environment:
+      - CLICKHOUSE_DB=db_name
+      - CLICKHOUSE_USER=user
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+      - CLICKHOUSE_PASSWORD=pass
+    ports:
+      - 9440:9440
+
   memcached:
     image: memcached:1.6.33-alpine
     expose:
@@ -41,6 +51,7 @@ services:
       - memcached
       - postgres
       - mysql
+      - clickhouse
 
   nginx:
     image: nginx:1.27.3-alpine
