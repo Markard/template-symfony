@@ -28,7 +28,7 @@ services:
       - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
       - CLICKHOUSE_PASSWORD=pass
     ports:
-      - 9440:9440
+      - 8123:8123
 
   memcached:
     image: memcached:1.6.33-alpine
