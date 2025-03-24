@@ -1,6 +1,21 @@
 {
     "sqltools.connections": [
         {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "MySQL",
+            "group": "Local",
+            "database": "db_name",
+            "username": "user",
+            "password": "pass"
+        },
+        {
             "pgOptions": {
                 "statement_timeout": 10000,
                 "query_timeout": 10000
@@ -12,7 +27,8 @@
             "name": "PgSQL",
             "group": "Local",
             "database": "db_name",
-            "username": "user"
+            "username": "user",
+            "password": "pass"
         }
     ]
 }
