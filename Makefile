@@ -4,6 +4,9 @@ ssh: ## Connect to containers via SSH
 	docker-compose exec -it php-fpm /bin/sh
 
 setup-dev: ## Setup project for development
+	cp docker/php-fpm/xdebug/xdebug.ini.example docker/php-fpm/xdebug/xdebug.ini
+	cp .env.example .env
+	cp docker/php-fpm/php-fpm/www.conf.example docker/php-fpm/php-fpm/www.conf 
 	make start
 	make composer-install
 
