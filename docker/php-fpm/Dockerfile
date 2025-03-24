@@ -70,13 +70,11 @@ RUN mkdir /usr/local/log \
 
 # Устанавливаем Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-# prepare shared folder for composer
-RUN mkdir /home/www-data/.composer \
-&& chown -R www-data:www-data /home/www-data/.composer
 
 # Устанавливаем консольную команду Symfony
-RUN curl -sS https://get.symfony.com/cli/installer | php -- --install-dir=/usr/local/bin \
-    && ln -s /usr/local/bin/symfony /usr/bin/symfony
+RUN apk add --no-cache bash \
+&& curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.alpine.sh' | bash \
+&& apk add symfony-cli
 
 COPY php.ini /usr/local/etc/php/php.ini
 COPY fpm-increase-timeout-for-debugging.conf /usr/local/etc/php-fpm.d/increase-timeout-for-debugging.conf
