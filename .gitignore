@@ -10,6 +10,7 @@ docker/php-fpm/php-fpm/www.conf
 
 # VsCode template
 .vscode/
+.prettierrc
 
 ###> symfony/framework-bundle ###
 project/.env.local
