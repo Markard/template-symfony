@@ -7,6 +7,7 @@ setup-dev: ## Setup project for development
 	cp docker/php-fpm/xdebug/xdebug.ini.example docker/php-fpm/xdebug/xdebug.ini
 	cp .env.example .env
 	cp docker/php-fpm/php-fpm/www.conf.example docker/php-fpm/php-fpm/www.conf 
+	cp project/.env.dev project/.env
 	make start
 	make composer-install
 
