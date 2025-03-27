@@ -21,6 +21,9 @@ restart: ## Restart the application
 	make stop
 	make start
 
+composer: ## Use composer command
+	$(DOCKER-APP-EXEC) 'composer $(filter-out $@,$(MAKECMDGOALS))'
+
 composer-install: ## Install composer dependencies
 	$(DOCKER-APP-EXEC) 'composer install'
 
