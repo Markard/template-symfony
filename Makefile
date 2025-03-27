@@ -32,3 +32,6 @@ composer-update: ## Update composer dependencies
 
 run: ## Run command in the container
 	$(DOCKER-APP-EXEC) '$(filter-out $@,$(MAKECMDGOALS))'
+
+console:
+	$(DOCKER-APP-EXEC) 'bin/console $(filter-out $@,$(MAKECMDGOALS))'
