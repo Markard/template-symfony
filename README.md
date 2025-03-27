@@ -5,4 +5,4 @@ This package provides a docker PHP Skeleton setup to start building your next id
 2. Setup `hosts` file with `127.0.0.1 project.local www.project.local` domains.
 3. Open www.project.local in your browser.
 
-Have fun
+Have fun123
