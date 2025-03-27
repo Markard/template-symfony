@@ -1,6 +1,7 @@
 services:
   php-fpm:
-    build:      
+    image: markard/php-fpm:8.4
+    build:
       context: docker/php-fpm
       args:
         DOCKER_HOST_UID: $DOCKER_HOST_UID
