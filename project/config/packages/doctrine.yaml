@@ -7,7 +7,7 @@ doctrine:
                 server_version: '%env(resolve:PGSQL_SERVER_VERSION)%'
                 profiling_collect_backtrace: '%kernel.debug%'
                 use_savepoints: true
-                charset: utf8mb4
+                charset: utf8
             mysql:
                 url: '%env(resolve:MYSQL_DATABASE_URL)%'
                 server_version: '%env(resolve:MYSQL_SERVER_VERSION)%'
