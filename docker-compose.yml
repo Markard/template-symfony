@@ -11,7 +11,7 @@ services:
       - ./docker/php-fpm/php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
       - ./docker/php-fpm/xdebug/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:ro
     expose:
-      - 9000
+      - "9000"
     links:
       - postgres
       - mysql
@@ -19,13 +19,12 @@ services:
       - redis
 
   nginx:
-    image: nginx:$NGINX_VERSION
+    image: nginx:${NGINX_VERSION}
     volumes:
       - ./project:/var/www/project:cached
       - ./docker/nginx/site.conf:/etc/nginx/conf.d/site.conf
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
     links:
       - php-fpm
 
@@ -39,7 +38,7 @@ services:
     volumes:
       - ./docker/mysql:/etc/mysql/conf.d
     ports:
-      - 3306:3306
+      - "3306:3306"
 
   postgres:
     image: postgres:${POSTGRESQL_VERSION}
@@ -48,7 +47,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
     ports:
-      - 5432:5432
+      - "5432:5432"
 
   clickhouse:
     image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION}
@@ -58,9 +57,9 @@ services:
       - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
       - CLICKHOUSE_PASSWORD=pass
     ports:
-      - 8123:8123
+      - "8123:8123"
 
   redis:
     image: redis:${REDIS_VERSION}
     ports:
-      - 6379:6379
+      - "6379:6379"
