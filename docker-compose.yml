@@ -1,11 +1,8 @@
 services:
   php-fpm:
-    image: markard/php-fpm:8.4
+    image: markarddev/php-fpm:8.4
     build:
       context: docker/php-fpm
-      args:
-        DOCKER_HOST_UID: $DOCKER_HOST_UID
-        MEMCACHED_VERSION: $MEMCACHED_VERSION
     volumes:
       - ./project:/var/www/project
       - ./docker/php-fpm/php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
