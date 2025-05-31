@@ -1,40 +1,25 @@
-DOCKER-APP-EXEC = docker-compose exec -it php-fpm /bin/sh -c
-
-ssh: ## Connect to containers via SSH
-	docker-compose exec -it php-fpm /bin/sh
-
-setup-dev: ## Setup project for development
+install-dev: ## Install project for development
 	cp docker/php-fpm/xdebug/xdebug.ini.example docker/php-fpm/xdebug/xdebug.ini
 	cp .env.example .env
-	cp docker/php-fpm/php-fpm/www.conf.example docker/php-fpm/php-fpm/www.conf 
+	cp docker/php-fpm/php-fpm/www.conf.example docker/php-fpm/php-fpm/www.conf
 	cp project/.env.dev project/.env
-	make start
+	make d-start
 	make composer-install
+.PHONY: install-dev
 
-start: ## Start application silently
+fpm-ssh: ## Connect to containers via SSH
+	docker-compose exec -it php-fpm /bin/sh
+.PHONY: fpm-ssh
+
+d-start: ## Start application
 	docker-compose up -d --build
+.PHONY: d-start
 
-stop: ## Stop application
+d-stop: ## Stop application
 	docker-compose down
+.PHONY: d-stop
 
-restart: ## Restart the application
-	make stop
-	make start
-
-composer: ## Use composer command
-	$(DOCKER-APP-EXEC) 'composer $(filter-out $@,$(MAKECMDGOALS))'
-
+DOCKER-APP-EXEC = docker-compose exec -it php-fpm /bin/sh -c
 composer-install: ## Install composer dependencies
 	$(DOCKER-APP-EXEC) 'composer install'
-
-composer-dump: ## Dump composer dependencies
-	$(DOCKER-APP-EXEC) 'composer dump'
-
-composer-update: ## Update composer dependencies
-	$(DOCKER-APP-EXEC) 'composer update $(filter-out $@,$(MAKECMDGOALS))'
-
-run: ## Run command in the container
-	$(DOCKER-APP-EXEC) '$(filter-out $@,$(MAKECMDGOALS))'
-
-console:
-	$(DOCKER-APP-EXEC) 'bin/console $(filter-out $@,$(MAKECMDGOALS))'
+.PHONY: composer-install
