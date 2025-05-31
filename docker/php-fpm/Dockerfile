@@ -1,5 +1,5 @@
 # Step 1: Builder
-FROM php:8.4-rc-fpm-alpine3.21 AS extensions
+FROM php:8.4-rc-fpm-alpine3.21 AS builder
 
 ## 1.1 Symfony deps: bcmath intl pdo
 RUN apk add --no-cache icu-dev \
@@ -73,11 +73,11 @@ RUN apk add libmemcached \
 ### 9. libzip
     libzip
 
-COPY --from=extensions /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
-COPY --from=extensions /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
+COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 ## Install symfony-cli
-COPY --from=extensions /usr/bin/symfony /usr/bin/symfony
+COPY --from=builder /usr/bin/symfony /usr/bin/symfony
 
 ## Install composer
 COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
