@@ -1,3 +1,13 @@
+volumes:
+  pg_data:
+  mysql_data:
+  clickhouse_data:
+  clickhouse_log:
+
+networks:
+  project-network:
+    driver: bridge
+
 services:
   php-fpm:
     image: markarddev/php-fpm:8.4
@@ -9,13 +19,26 @@ services:
       - ./docker/php-fpm/xdebug/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:ro
     expose:
       - "9000"
-    links:
-      - postgres
-      - mysql
-      - clickhouse
-      - redis
-      - rabbitmq
-      - kafka
+    networks:
+      - project-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "php-fpm-healthcheck || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   nginx:
     image: nginx:${NGINX_VERSION}
@@ -24,8 +47,11 @@ services:
       - ./docker/nginx/site.conf:/etc/nginx/conf.d/site.conf
     ports:
       - "80:80"
-    links:
-      - php-fpm
+    networks:
+      - project-network
+    depends_on:
+      php-fpm:
+        condition: service_healthy
 
   mysql:
     image: mysql:${MYSQL_VERSION}
@@ -35,9 +61,17 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: pass
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./docker/mysql:/etc/mysql/conf.d
     ports:
       - "3306:3306"
+    networks:
+      - project-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   postgres:
     image: postgres:${POSTGRESQL_VERSION}
@@ -45,8 +79,17 @@ services:
       POSTGRES_DB: db_name
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
+    volumes:
+      - pg_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - project-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d db_name" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   clickhouse:
     image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION}
@@ -55,13 +98,30 @@ services:
       - CLICKHOUSE_USER=user
       - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
       - CLICKHOUSE_PASSWORD=pass
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse/
+      - clickhouse_log:/var/log/clickhouse-server/
     ports:
       - "8123:8123"
+    networks:
+      - project-network
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider localhost:8123/ping || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   redis:
     image: redis:${REDIS_VERSION}
     ports:
       - "6379:6379"
+    networks:
+      - project-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   rabbitmq:
     image: rabbitmq:4-management
@@ -72,10 +132,12 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      - project-network
     healthcheck:
       test: rabbitmq-diagnostics -q ping
-      interval: 30s
-      timeout: 30s
+      interval: 10s
+      timeout: 5s
       retries: 3
 
   kafka:
@@ -83,14 +145,14 @@ services:
     environment:
       # Configure listeners for both docker and host communication
       KAFKA_LISTENERS: 'CONTROLLER://:9091,HOST://:9092,INTER://:19092'
-      KAFKA_ADVERTISED_LISTENERS: 'INTER://kafka-1:19092,HOST://localhost:29092'
+      KAFKA_ADVERTISED_LISTENERS: 'INTER://kafka:19092,HOST://localhost:29092'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,INTER:PLAINTEXT,HOST:PLAINTEXT'
 
       # Settings required for KRaft mode
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-1:9091
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9091
 
       # Listener to use for broker-to-broker communication
       KAFKA_INTER_BROKER_LISTENER_NAME: 'INTER'
@@ -102,9 +164,10 @@ services:
       - "19092"
     ports:
       - "29092:9092"
+    networks:
+      - project-network
     healthcheck:
       test: "bash -c 'printf \"\" > /dev/tcp/127.0.0.1/9091; exit $$?;'"
-      interval: 5s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
       retries: 3
-      start_period: 30s

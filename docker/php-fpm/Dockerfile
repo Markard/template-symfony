@@ -54,6 +54,10 @@ RUN apk add --no-cache bash \
 && curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.alpine.sh' | bash \
 && apk add symfony-cli
 
+RUN wget -O /usr/local/bin/php-fpm-healthcheck \
+https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck \
+&& chmod +x /usr/local/bin/php-fpm-healthcheck
+
 #-----------------------------------------------------------------------------------------------------------------------
 
 # Step 2: Final
@@ -71,13 +75,18 @@ RUN apk add libmemcached \
 ### 8. Kafka
     librdkafka \
 ### 9. libzip
-    libzip
+    libzip \
+### healthcheck
+    fcgi sed grep
 
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 ## Install symfony-cli
 COPY --from=builder /usr/bin/symfony /usr/bin/symfony
+
+## Install healthcheck
+COPY --from=builder /usr/local/bin/php-fpm-healthcheck /usr/local/bin/php-fpm-healthcheck
 
 ## Install composer
 COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
