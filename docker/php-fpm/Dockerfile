@@ -49,6 +49,23 @@ RUN apk add libzip-dev zip \
     && apk add --no-cache libzip \
     && docker-php-ext-install zip
 
+## 1.10 Swoole
+RUN apk add --no-cache libstdc++ libpq && \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS curl-dev linux-headers brotli-dev postgresql-dev openssl-dev pcre-dev pcre2-dev sqlite-dev zlib-dev && \
+    docker-php-ext-install sockets && \
+    mkdir /usr/src/php/ext/swoole && \
+    curl -sfL https://github.com/swoole/swoole-src/archive/v6.0.2.tar.gz -o swoole.tar.gz && \
+    tar xfz swoole.tar.gz --strip-components=1 -C /usr/src/php/ext/swoole && \
+    docker-php-ext-configure swoole \
+        --enable-swoole-curl   \
+        --enable-mysqlnd       \
+        --enable-swoole-pgsql  \
+        --enable-swoole-sqlite \
+        --enable-brotli        \
+        --enable-openssl       \
+        --enable-sockets    && \
+    docker-php-ext-install -j$(nproc) swoole
+
 ## Install Symfony-cli
 RUN apk add --no-cache bash \
 && curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.alpine.sh' | bash \
